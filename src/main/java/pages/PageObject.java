@@ -1,19 +1,21 @@
 package pages;
 
 import driver.WebDriverInstance;
+import elements.Button;
+import elements.TextInput;
+import elements.impl.ButtonImpl;
+import elements.impl.TextInputImpl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 public class PageObject {
 
-    private WebElement button;
-    private WebElement textInput;
+    private Button button;
+    private TextInput textInput;
 
     public void search(String text){
-        WebDriverInstance.getDriverInstance();
-        WebDriverInstance.loadPage();
-        button = WebDriverInstance.getDriverInstance().findElement(By.name("btnG"));
-        textInput = WebDriverInstance.getDriverInstance().findElement(By.id("lst-ib"));
+        button = new ButtonImpl();
+        textInput = new TextInputImpl();
         textInput.sendKeys(text);
         button.click();
     }
