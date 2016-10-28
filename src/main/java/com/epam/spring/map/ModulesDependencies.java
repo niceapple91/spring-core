@@ -2,6 +2,7 @@ package com.epam.spring.map;
 
 import com.epam.spring.annotations.Entity;
 import com.epam.spring.annotations.Inject;
+import com.epam.spring.proxy.InvocationHandlerImpl;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
@@ -30,7 +31,7 @@ public class ModulesDependencies {
         try {
             T object = (T)contextBean.get(clazz).getDeclaredConstructor().newInstance();
             injecting(object);
-            return object;
+            return InvocationHandlerImpl.newInstance(object);
         } catch (Exception e) {
             return null;
         }
