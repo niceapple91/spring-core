@@ -1,11 +1,14 @@
 package main;
 
-import pages.PageObject;
+import map.ModulesDependencies;
+import pages.Page;
+import pages.impl.PageObject;
 
 public class Main {
 
     public static void main(String[] args) {
-        PageObject page = new PageObject();
+        ModulesDependencies bean = new ModulesDependencies();
+        Page page = bean.getClassImpl(Page.class);
         page.search("some new");
     }
 
