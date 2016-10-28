@@ -1,12 +1,11 @@
 package com.epam.spring.map;
 
-import com.epam.spring.annotations.Entity;
-import com.epam.spring.annotations.Inject;
-import com.epam.spring.annotations.Randome;
+import com.epam.spring.annotations.*;
 import com.epam.spring.proxy.InvocationHandlerImpl;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
@@ -31,11 +30,14 @@ public class ModulesDependencies {
     }
 
     public <T extends Object> T getClassImpl(Class<T> clazz){
+        T instance;
         try {
             T object = (T)contextBean.get(clazz).getDeclaredConstructor().newInstance();
+            initting(object);
             injecting(object);
             randoming(object);
-            return InvocationHandlerImpl.newInstance(object);
+            postInitting(object);
+            return addProfiling(object);
         } catch (Exception e) {
             return null;
         }
@@ -50,6 +52,56 @@ public class ModulesDependencies {
                     field.setAccessible(true);
                     try {
                         field.set(object, getClassImpl(field.getType()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private <T extends Object> T addProfiling(T object){
+        T instance;
+        if (isProfilePresent(object)){
+            instance = InvocationHandlerImpl.newInstance(object);
+        }
+        else{
+            instance = object;
+        }
+        return instance;
+    }
+
+    private <T> boolean isProfilePresent(T object){
+        Class clazz = object.getClass();
+        return clazz.isAnnotationPresent(Profiling.class);
+    }
+
+    private <T> void initting(T object){
+        Class clazz = object.getClass();
+        Method[] methods = clazz.getDeclaredMethods();
+        if (methods.length != 0) {
+            for (Method method : methods) {
+                if (method.isAnnotationPresent(Init.class)) {
+                    method.setAccessible(true);
+                    try {
+                        method.invoke(object);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private <T> void postInitting(T object){
+        Class clazz = object.getClass();
+        Method[] methods = clazz.getDeclaredMethods();
+        if (methods.length != 0) {
+            for (Method method : methods) {
+                if (method.isAnnotationPresent(PostInit.class)) {
+                    method.setAccessible(true);
+                    try {
+                        method.invoke(object);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

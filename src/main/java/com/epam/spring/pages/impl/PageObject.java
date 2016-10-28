@@ -1,13 +1,12 @@
 package com.epam.spring.pages.impl;
 
-import com.epam.spring.annotations.Entity;
-import com.epam.spring.annotations.Inject;
-import com.epam.spring.annotations.Randome;
+import com.epam.spring.annotations.*;
 import com.epam.spring.elements.Button;
 import com.epam.spring.elements.TextInput;
 import com.epam.spring.pages.Page;
 
 @Entity
+@Profiling
 public class PageObject implements Page{
 
     @Randome(min = 2, max = 7)
@@ -23,6 +22,16 @@ public class PageObject implements Page{
         }
         textInput.sendKeys(text);
         button.click();
+    }
+
+    @Init
+    private void init(){
+        System.out.println("In init in PageObject");
+    }
+
+    @PostInit
+    private void postInit(){
+        System.out.println("In postInit in PageObject");
     }
 
 
